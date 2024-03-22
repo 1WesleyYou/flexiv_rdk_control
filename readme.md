@@ -21,4 +21,25 @@
 系系统专用指令)
 
 或者，我们可以专门更改代码中的部分进行快速使用，即 `robot`
-初始化的时候需要用到的 `flexiv::Robot robot(robotIP, localIP);` 
+初始化的时候需要用到的 `flexiv::Robot robot(robotIP, localIP);`
+
+### 常见头文件配置
+
+一般我们会引入以下包 :
+
+```cpp 
+#include <flexiv/Robot.hpp>
+#include <flexiv/Exception.hpp>
+#include <flexiv/Log.hpp>
+#include <flexiv/Utility.hpp>
+
+#include <iostream>
+#include <string>
+#include <thread>
+```
+
+如果工程使用到了夹爪，那么我们还需要 include 一个
+
+```cpp
+#include <flexiv/Gripper.hpp>
+```

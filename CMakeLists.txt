@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.16.3)
+project(test_control)
+
+SET(CMAKE_VERBOSE_MAKEFILE ON)
+message("OS: ${CMAKE_SYSTEM_NAME}")
+
+find_package(flexiv_rdk REQUIRED)
+add_executable(demo test_control.cpp)
+target_link_libraries(demo flexiv::flexiv_rdk)
+set_target_properties(demo PROPERTIES
+        CXX_STANDARD 14
+        CXX_STANDARD_REQUIRED ON)
