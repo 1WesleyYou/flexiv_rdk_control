@@ -43,3 +43,12 @@
 ```cpp
 #include <flexiv/Gripper.hpp>
 ```
+
+## 代码函数问题
+
+### move(std::vector<double>)
+
+输入是一个向量,满足各个轴转动对应的角度
+
+### moveL()
+輸入是
