@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16.3)
 project(test_control)
 
 SET(CMAKE_VERBOSE_MAKEFILE ON)
+#include_directories(${CMAKE_SOURCE_DIR}/lib/nlohmann)
 message("OS: ${CMAKE_SYSTEM_NAME}")
 
 find_package(flexiv_rdk REQUIRED)
