@@ -22,7 +22,7 @@ def update_data():
     """更新模拟数据包中的位置和速度"""
     global current_positions, current_velocities
     for i in range(7):
-        position_change = random.uniform(-0.01, 0.01)  # 小幅度调整
+        position_change = random.uniform(-0.001, 0.001)  # 小幅度调整
         velocity_change = random.uniform(-0.0005, 0.0005)  # 小幅度调整
         current_positions[i] += position_change
         current_velocities[i] += velocity_change

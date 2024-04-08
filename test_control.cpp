@@ -1,6 +1,3 @@
-//
-// Created by whoami on 24-3-22.
-//
 #include <flexiv/Exception.hpp>
 #include <flexiv/Gripper.hpp>
 #include <flexiv/Log.hpp>
@@ -8,11 +5,13 @@
 #include <flexiv/Utility.hpp>
 
 #include "lib/nlohmann/json.hpp"
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
+#define _USE_MATH_DEFINES
 
 const int MAX_INSTRUCTIONS = 30;
 
@@ -33,7 +32,7 @@ std::vector<double> vector_add(const std::vector<double> &v1,
 
 void vector_deg2rad(std::vector<double> &v1) {
   for (double &i : v1) {
-    i = i / 180 * 3.1415926535;
+    i = i / 180 * M_PI;
   }
 }
 
@@ -56,6 +55,8 @@ int main() {
   std::vector<double> default_acc = {0, 0, 0, 0, 0, 0, 0};
   std::vector<double> real_pos = {0, 0, 0, 0, 0, 0, 0};
   std::vector<double> real_vel = {0, 0, 0, 0, 0, 0, 0};
+  std::vector<double> last_pos = {0, 0, 0, 0, 0, 0, 0};
+  std::vector<double> last_vel = {0, 0, 0, 0, 0, 0, 0};
 
   log.info("You Yuchen's Control Demo:");
   // 清除错误指令（如果可行）
@@ -106,19 +107,18 @@ int main() {
 
         std::cout << "\n";
 
-        std::cout << "pos ";
-        vector_deg2rad(joint_positions);
-        real_pos = vector_add(default_pos, joint_positions);
-        //        real_vel = vector_add(real_vel, joint_velocities);
+        std::cout << "real_pos: ";
+        real_pos = vector_add(joint_positions, default_pos);
         for (const auto &vel : real_pos) {
           std::cout << vel << " ";
         }
         std::cout << std::endl;
-        for (const auto &vel : joint_velocities) {
-          std::cout << vel << " ";
+        robot.streamJointPosition(real_pos, joint_velocities, default_acc);
+        std::cout << "deg: ";
+        for (const auto &vel : real_pos) {
+          std::cout << vel / M_PI * 180 << " ";
         }
         std::cout << std::endl;
-        robot.streamJointPosition(real_pos, joint_velocities, default_acc);
       }
     } catch (json::parse_error &e) {
       std::cerr << "Parse error: " << e.what() << std::endl;
