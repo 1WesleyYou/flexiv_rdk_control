@@ -7,7 +7,9 @@ message("OS: ${CMAKE_SYSTEM_NAME}")
 
 find_package(flexiv_rdk REQUIRED)
 add_executable(demo test_control.cpp)
+add_executable(sine sine_control_demo.cpp)
 target_link_libraries(demo flexiv::flexiv_rdk)
+target_link_libraries(sine flexiv::flexiv_rdk)
 set_target_properties(demo PROPERTIES
         CXX_STANDARD 14
         CXX_STANDARD_REQUIRED ON)
