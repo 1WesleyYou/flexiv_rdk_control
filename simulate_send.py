@@ -27,13 +27,13 @@ try:
             try:
                 # print(last_data['joint_positions'])
                 data = json.loads(line)  # 解析JSON
-                data_a4_angle.append(last_data[3])
-                data_a4_last.append(data['joint_positions'][3])
+                data_a4_angle.append(data['joint_positions'][3])
 
                 diff_data = []
                 # 计算两个变量的差值，用于预测下一帧的走向
                 for j in range(7):
                     diff_data.append((data['joint_positions'][j] - last_data[j]) / time_span)
+                print(np.max(diff_data))
                 # print(data['joint_positions'][j])
                 # print(time_span)
                 # print(diff_data)
@@ -43,7 +43,9 @@ try:
                     local_data = [0, 0, 0, 0, 0, 0, 0]
                     for j in range(7):
                         local_data[j] = data['joint_positions'][j]  # todo: 这里可能是硬拷贝的问题，明天有空查一下
-                        local_data = local_data + diff_data
+                        local_data[j] = local_data[j] + diff_data[j] * i
+                        if j == 3:
+                            data_a4_last.append(local_data[3])
                         # local_data[j] = local_data[j] + diff_data[j]
                         # data['joint_positions'][j] = data['joint_positions'][j] + diff_data[j]
                     # 确保每一行都是有效的JSON格式
@@ -59,8 +61,10 @@ try:
 
             except json.JSONDecodeError as e:
                 print(f"JSON解析错误: {e}")
-        t = np.linspace(0, 20, 20 * 10)
-        plt.plot(t, data_a4_angle)
+        t = np.linspace(0, 20, 20 * 1000)
+        t2 = np.linspace(0, 20, 20 * 10)
+
+        plt.scatter(t2, data_a4_angle)
         plt.plot(t, data_a4_last)
         plt.legend()
         plt.show()
