@@ -14,7 +14,7 @@ p = subprocess.Popen(cpp_program_path, stdin=subprocess.PIPE)
 time_cnt = 0
 
 # 文件路径
-file_path = 'order.txt'
+file_path = 'order2.txt'
 time_span = 100  # 假设这里是 100 ms 时间延迟，具体的需要按收包实际时间差考虑
 last_data = [0, 0, 0, 0, 0, 0, 0]
 data_a4_last = []
@@ -27,7 +27,7 @@ try:
             try:
                 # print(last_data['joint_positions'])
                 data = json.loads(line)  # 解析JSON
-                # data_a4_angle.append(data['joint_positions'][3])
+                data_a4_angle.append(data['joint_positions'][1])
 
                 diff_data = []
                 # 计算两个变量的差值，用于预测下一帧的走向
@@ -50,11 +50,11 @@ try:
                     # 确保每一行都是有效的JSON格式
                     local_datas = {'joint_positions': local_data, 'joint_velocities': [0, 0, 0, 0, 0, 0, 0],
                                    'joint_efforts': None}
-                    json_string = json.dumps(local_datas)  # 将解析后的JSON重新编码为字符串
-                    data_a4_last.append(local_data[1])
-                    p.stdin.write(json_string.encode() + b'\n')  # 发送JSON字符串给C++程序
-                    p.stdin.flush()  # 确保数据被发送
-                    time.sleep(0.020)  # 以1000Hz的频率发送数据
+                    # json_string = json.dumps(local_datas)  # 将解析后的JSON重新编码为字符串
+                    data_a4_last.append(local_data[3])
+                    # p.stdin.write(json_string.encode() + b'\n')  # 发送JSON字符串给C++程序
+                    # p.stdin.flush()  # 确保数据被发送
+                    # time.sleep(0.020)  # 以1000Hz的频率发送数据
                     time_cnt = time_cnt + 0.001
 
                 if time_cnt >= 20:

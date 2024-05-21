@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/demo.dir/test_control.cpp.o -o demo  /mnt/c/Users/25755/Desktop/llm-robot/flexiv_rdk-0.9.1/lib/libflexiv_rdk.x86_64-linux-gnu.a 

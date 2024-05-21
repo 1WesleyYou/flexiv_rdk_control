@@ -51,8 +51,6 @@ int main() {
 
     std::vector<double> default_pos = {0.0, -40.0, 0.0, 90.0, 0.0, 40.0, 0.0};
     vector_deg2rad(default_pos);
-//    std::vector<double> default_vel = {0.2, 0.2, 0.2,
-//                                       0.2, 0.2, 0.2};
 
     std::vector<double> default_acc = {0.0, 0.0, 0.0,
                                        0.0, 0.0, 0.0, 0.0};
@@ -93,6 +91,7 @@ int main() {
     // 读取数据直到EOF
     for (std::string line; std::getline(std::cin, line);) {
         try {
+            gripper.grasp(1);
             // 解析JSON数据
             auto j = json::parse(line);
 
@@ -105,20 +104,22 @@ int main() {
                         j["joint_positions"].get<std::vector<double>>();
                 std::vector<double> joint_velocities = {0, 0, 0, 0, 0, 0, 0};
 
-                std::cout << "\n";
+//                std::cout << "\n";
 
-//        std::cout << "real_pos: ";
                 real_pos = vector_add(joint_positions, default_pos);
-//        for (const auto &vel : real_pos) {
-//          std::cout << vel << " ";
-//        }
-//        std::cout << std::endl;
                 robot.streamJointPosition(real_pos, joint_velocities, default_acc);
                 std::cout << "deg: ";
                 for (const auto &vel: real_pos) {
                     std::cout << vel / M_PI * 180 << " ";
                 }
                 std::cout << std::endl;
+//                if (robot.isFault()) {
+//                    log.warn("Fault occurred on robot server, trying to clear ...");
+                    // Try to clear the fault
+//                    robot.clearFault();
+//                    std::this_thread::sleep_for(std::chrono::seconds(2));
+//                }
+
             }
         } catch (json::parse_error &e) {
             std::cerr << "Parse error: " << e.what() << std::endl;

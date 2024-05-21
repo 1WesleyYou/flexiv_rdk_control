@@ -54,6 +54,44 @@
 
 輸入是
 
+## 机械臂实时控制问题
+
+我们使用的是函数 `streamJointPosition()`
+这个函数基本要求是以 1kHz 的频率向机械臂发送一个控制指令，格式是 `(pos,vel,acc)` 单位是角度的弧度
+其中 `pos` 等都是一个 7 维 `std::vector<double>` 向量。官方要求每个轴的变化要连续平滑，那么就会
+有两种办法：插值或者降低发包频率
+
+一般而言，当上位机和机械臂丢失通信的时候并不会直接结束程序，而是会累计丢失数量，如果数量达到20个就会报
+error (可以手动清除)
+
+那么道理上按照 19 ms 的周期发包是可以的
+
+## 爪子控制
+
+### [官方教程](https://rdk.flexiv.com/api/classflexiv_1_1_robot.html#a7140861dae2dfd218091d537d6ffce5c)
+
+### 省流教程
+
+初始化构造函数: 输入变量是对应的 robot 对象
+
+```cpp
+`// Instantiate gripper control interface
+    flexiv::Gripper gripper(robot);
+```
+
+控制函数 `move()`
+参数: `double width, double velocity, double force_limit`
+
+示例代码 
+```cpp
+// 0.01 表示间距 (m)
+// 0.1 表示速度 (m/s)
+// 20 表示力 (N), 默认值 为 0
+gripper.move(0.01, 0.1, 20);
+// 使用进程休眠确保这一项任务完成
+std::this_thread::sleep_for(std::chrono::seconds(2));
+```
+
 # 外部库
 
 ## json
