@@ -49,6 +49,8 @@ int main() {
     std::string instructions[MAX_INSTRUCTIONS];
     std::fstream iFile;
 
+    bool is_gripper_closed = false;
+    bool last_flag = is_gripper_closed;
     std::vector<double> default_pos = {0.0, -40.0, 0.0, 90.0, 0.0, 40.0, 0.0};
     vector_deg2rad(default_pos);
 
@@ -102,20 +104,27 @@ int main() {
                 std::vector<double> joint_positions =
                         j["joint_positions"].get<std::vector<double>>();
                 std::vector<double> joint_velocities = {0, 0, 0, 0, 0, 0, 0};
-
-//                std::cout << "\n";
+                bool effort = j["joint_efforts"].get<bool>();
+                if (last_flag && !effort) {
+                    is_gripper_closed = !is_gripper_closed;
+                }
+                last_flag = effort;
 
 //                real_pos = vector_add(joint_positions, default_pos);
                 robot.streamJointPosition(joint_positions, joint_velocities, default_acc);
-                std::cout << "deg: ";
-                for (const auto &vel: joint_positions) {
-                    std::cout << vel / M_PI * 180 << " ";
+//                std::cout << "deg: ";
+//                for (const auto &vel: joint_positions) {
+//                    std::cout << vel / M_PI * 180 << " ";
+//                }
+//                std::cout << std::endl;
+                if (!is_gripper_closed) {
+                    gripper.move(0.09, 0.1, 10);
+                } else {
+                    gripper.move(0.02, 0.1, 10);
                 }
-                std::cout << std::endl;
-                gripper.move(0.02,0.1,20);
+                std::cout << is_gripper_closed << std::endl;
 //                if (robot.isFault()) {
 //                    log.warn("Fault occurred on robot server, trying to clear ...");
-                // Try to clear the fault
 //                    robot.clearFault();
 //                    std::this_thread::sleep_for(std::chrono::seconds(2));
 //                }
@@ -126,6 +135,10 @@ int main() {
             // 处理错误或跳过无效的数据包
         }
     }
-    robot.stop();
+
+    robot.
+
+            stop();
+
     return 0;
 }
