@@ -9,8 +9,9 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <thread>
 #include <vector>
+#include <thread>
+#include <iomanip>
 
 #define _USE_MATH_DEFINES
 
@@ -46,6 +47,7 @@ int main() {
     std::string localIP = "192.168.2.105"; // todo: 记得修改这里的 ip 地址
     flexiv::Robot robot(robotIP, localIP);
     flexiv::Gripper gripper(robot);
+    flexiv::RobotStates robotStates;
     std::string instructions[MAX_INSTRUCTIONS];
     std::fstream iFile;
 
@@ -54,8 +56,7 @@ int main() {
     std::vector<double> default_pos = {0.0, -40.0, 0.0, 90.0, 0.0, 40.0, 0.0};
     vector_deg2rad(default_pos);
 
-    std::vector<double> default_acc = {0.0, 0.0, 0.0,
-                                       0.0, 0.0, 0.0, 0.0};
+    std::vector<double> default_acc = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     std::vector<double> real_pos = {0, 0, 0, 0, 0, 0, 0};
     std::vector<double> real_vel = {0, 0, 0, 0, 0, 0, 0};
 
@@ -110,25 +111,30 @@ int main() {
                 }
                 last_flag = effort;
 
-//                real_pos = vector_add(joint_positions, default_pos);
-                robot.streamJointPosition(joint_positions, joint_velocities, default_acc);
-//                std::cout << "deg: ";
-//                for (const auto &vel: joint_positions) {
-//                    std::cout << vel / M_PI * 180 << " ";
-//                }
-//                std::cout << std::endl;
+                //                real_pos = vector_add(joint_positions, default_pos);
+                robot.streamJointPosition(joint_positions, joint_velocities,
+                                          default_acc);
+
+                // Set initial pose to current TCP pose
+                robot.getRobotStates(robotStates);
+                auto initPose = robotStates.tcpPose;       //                std::cout << "deg: ";
+                std::cout<<std::setprecision(3) << "current TCP pose: [x: " << initPose[0] << " y: " << initPose[1] << " z:" << initPose[2]
+                          << "], unit: m, gripper state: " << (is_gripper_closed ? "close" : "open") << "\r";
+                //                for (const auto &vel: joint_positions) {
+                //                    std::cout << vel / M_PI * 180 << " ";
+                //                }
+                //                std::cout << std::endl;
                 if (!is_gripper_closed) {
                     gripper.move(0.09, 0.1, 10);
                 } else {
                     gripper.move(0.02, 0.1, 10);
                 }
-                std::cout << is_gripper_closed << std::endl;
-//                if (robot.isFault()) {
-//                    log.warn("Fault occurred on robot server, trying to clear ...");
-//                    robot.clearFault();
-//                    std::this_thread::sleep_for(std::chrono::seconds(2));
-//                }
-
+//                std::cout << is_gripper_closed << std::endl;
+                //                if (robot.isFault()) {
+                //                    log.warn("Fault occurred on robot server, trying
+                //                    to clear ..."); robot.clearFault();
+                //                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                //                }
             }
         } catch (json::parse_error &e) {
             std::cerr << "Parse error: " << e.what() << std::endl;
